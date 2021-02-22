@@ -1,0 +1,7 @@
+black
+coverage
+flake8
+nox
+pytest
+pytest-cov
+python-dotenv>=0.5.1

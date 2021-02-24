@@ -1,7 +1,5 @@
 #!/usr/bin/python
-"""See full version format docs in PEP440.
-https://www.python.org/dev/peps/pep-0440/
-"""
+
 import sys
 import click
 import os

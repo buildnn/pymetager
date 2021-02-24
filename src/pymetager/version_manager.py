@@ -1,3 +1,8 @@
+#!/usr/bin/python
+"""See full version format docs in PEP440.
+https://www.python.org/dev/peps/pep-0440/
+"""
+
 from packaging.version import Version
 
 _main_version_components = ["major", "minor", "micro"]
@@ -5,14 +10,53 @@ _segment_version_components = ["dev", "pre", "post"]
 
 
 def increment_major(version, **kwargs):
+    """Increment major version.
+
+    Parameters
+    ----------
+    version : packaging.version.Version
+        The original version.
+
+    Returns
+    -------
+    packaging.version.Version
+        The updated version.
+
+    """
     return Version(f"{version.major + 1}.0")
 
 
 def increment_minor(version, **kwargs):
+    """Increment minor version.
+
+    Parameters
+    ----------
+    version : packaging.version.Version
+        The original version.
+
+    Returns
+    -------
+    packaging.version.Version
+        The updated version.
+
+    """
     return Version(f"{version.major}.{version.minor + 1}")
 
 
 def increment_micro(version, **kwargs):
+    """Increment micro version.
+
+    Parameters
+    ----------
+    version : packaging.version.Version
+        The original version.
+
+    Returns
+    -------
+    packaging.version.Version
+        The updated version.
+
+    """
     return Version(f"{version.major}.{version.minor}.{version.micro + 1}")
 
 
@@ -40,6 +84,28 @@ _segments = {
 
 
 def increment_segment(version, segment="dev", increment_upstream="micro", **kwargs):
+    """Increment segment version.
+
+    Parameters
+    ----------
+    version : packaging.version.Version
+        The original version.
+    segment : str {"dev" | "pre" | "post"}
+        The segment to increment.
+    increase_upstream : Union[str, None] {"major" | "minor" | "micro" | None}
+        Wether to increment an upstream part of the version and which one.
+
+    Returns
+    -------
+    packaging.version.Version
+        The updated version.
+
+    Raises
+    ------
+    ValueError
+        To be documented yet.
+
+    """
     assert segment in _segment_version_components
     # eg. for "dev" equals to `version.is_devrelease`
     # eg. `segment="dev"; version=Version("0.1.dev0")` -> True

@@ -1,4 +1,4 @@
-from pypack_metager import __version__
+from pymetager import __version__
 
 
 def test_version():

@@ -1,0 +1,5 @@
+jupyter-book
+ipykernel
+ipython
+sphinx<3
+sphinx-click

@@ -19,3 +19,19 @@ def tests(session):
     session.install("pytest-cov")
     session.install("-e", ".")
     session.run("pytest", "--cov=src", "tests")
+
+
+@nox.session
+def build_docs(session):
+    session.install("-r", "requirements-docs.txt")
+    session.install("-e", ".")
+    session.run(
+        "sphinx-apidoc",
+        "-o",
+        "docs/reference",
+        "--separate",
+        "-a",
+        "-f",
+        "src/pymetager",
+    )
+    session.run("jupyter-book", "build", "docs")

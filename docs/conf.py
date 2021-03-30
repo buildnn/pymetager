@@ -69,3 +69,24 @@ html_static_path = ["_static"]
 html_theme = "sphinx_book_theme"
 html_logo = "_static/logo.svg"
 html_favicon = "_static/favicon.svg"
+
+html_theme_options = {
+    "repository_url": "https://github.com/buildnn/pymetager",
+    "use_issues_button": True,
+    "use_repository_button": True,
+    "use_edit_page_button": True,
+    "path_to_docs": "./docs",
+    "home_page_in_toc": True,
+    "extra_navbar": """
+    <div style="height: 100%; vertical-align: bottom; margin: auto;">
+    <p>---</p>
+    <a href="https://www.buildnn.com">
+    <div style="background-image: url(\
+        'https://www.buildnn.com/assets/img/SVG/full_logo.svg'); \
+        width: 100%; height: 100px; background-size: 200px 50px; \
+        background-position: center bottom; background-repeat: no-repeat"></div>
+    <p>about BuildNN</p>
+    </a>
+    </div>
+    """,
+}

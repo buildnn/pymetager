@@ -1,5 +1,4 @@
-jupyter-book
-ipykernel
-ipython
-sphinx<3
+sphinx
 sphinx-click
+myst-parser
+sphinx_book_theme

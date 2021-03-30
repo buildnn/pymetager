@@ -34,4 +34,3 @@ def build_docs(session):
         "-f",
         "src/pymetager",
     )
-    session.run("jupyter-book", "build", "docs")

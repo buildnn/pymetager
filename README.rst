@@ -4,8 +4,8 @@
 A `BuildNN <https://www.buildnn.com>`_ Open Source project.
 
 .. image:: https://readthedocs.org/projects/pymetager/badge/?version=latest
-:target: https://pymetager.readthedocs.io/en/latest/?badge=latest
-:alt: Documentation Status
+  :target: https://pymetager.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
 
 Installing
 ----------

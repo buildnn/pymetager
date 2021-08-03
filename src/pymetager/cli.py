@@ -4,6 +4,7 @@ import sys
 import click
 import os
 import configparser
+import toml
 
 from .version_manager import (
     _version_ops,
@@ -13,17 +14,36 @@ from .version_manager import (
 )
 
 
-def get_config(config_fp=os.path.join(".", "setup.cfg")):
-    config = configparser.ConfigParser()
-    config.read(config_fp)
-    return config, config_fp
+DEFAULT_SETUP_CFG = os.path.join(os.curdir, "setup.cfg")
+DEFAULT_PYPROJECT_TOML = os.path.join(os.curdir, "pyproject.toml")
+
+
+if os.path.isfile(DEFAULT_PYPROJECT_TOML):
+    DEFAULT_CONFIG = DEFAULT_PYPROJECT_TOML
+else:
+    DEFAULT_CONFIG = DEFAULT_SETUP_CFG
+
+
+def get_config(config_fp=DEFAULT_CONFIG):
+    _, extension = os.path.splitext(config_fp)
+    if extension == ".cfg":
+        config = configparser.ConfigParser()
+        config.read(config_fp)
+        return config, config_fp, extension
+    elif extension == ".toml":
+        config = toml.load(config_fp)
+        return config, config_fp, extension
+    else:
+        raise NotImplementedError(
+            "File extension not recognized. Shoud be `.toml` or `.cfg`."
+        )
 
 
 @click.group("pypack-metager")
 @click.option("-q", "--quiet", is_flag=True, help="Flag for minimal output.")
 @click.option(
     "--config_fp",
-    default=os.path.join(".", "setup.cfg"),
+    default=DEFAULT_CONFIG,
     show_default=True,
     type=click.Path(exists=True, file_okay=True, dir_okay=False),
     help="Custom path for setup.cfg.",
@@ -33,9 +53,10 @@ def cli(ctx, quiet, config_fp):
     ctx.ensure_object(dict)
     ctx.obj["QUIET"] = quiet
 
-    config, config_fp = get_config(config_fp=config_fp)
+    config, config_fp, config_type = get_config(config_fp=config_fp)
     ctx.obj["CONFIG"] = config
     ctx.obj["CONFIG_FP"] = config_fp
+    ctx.obj["CONFIG_TYPE"] = config_type
 
     if not quiet:
         click.secho("--- PYPACK-METAGER ---", fg="green")
@@ -64,6 +85,7 @@ def increment(ctx, element, segment, increment_upstream, custom_version, force):
     update_config_version(
         config=ctx.obj["CONFIG"],
         config_fp=ctx.obj["CONFIG_FP"],
+        config_type=ctx.obj["CONFIG_TYPE"],
         element=element,
         segment=segment,
         increment_upstream=increment_upstream,
@@ -78,14 +100,18 @@ def increment(ctx, element, segment, increment_upstream, custom_version, force):
 @click.option("-s", "--section", type=click.STRING, default="metadata")
 def echo_meta_elm(ctx, name, section):
     config = ctx.obj["CONFIG"]
+    config_fp = ctx.obj["CONFIG_FP"]
+
     try:
-        _section = config[section]
+        _section = config
+        for s in section.split("."):
+            _section = _section[s]
     except KeyError:
-        raise KeyError(f"Section '{section}' does not exist in `setup.cfg`.")
+        raise KeyError(f"Section '{section}' does not exist in `{config_fp}`.")
     try:
-        sys.stdout.write(_section[name] + "\n")
+        sys.stdout.write(str(_section[name]) + "\n")
     except KeyError:
-        raise KeyError(f"Tag '{name}' does not exist in `setup.cfg`/'{section}'.")
+        raise KeyError(f"Tag '{name}' does not exist in `{config_fp}`/'{section}'.")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ https://www.python.org/dev/peps/pep-0440/
 """
 
 from packaging.version import Version
+import toml
+
 
 _main_version_components = ["major", "minor", "micro"]
 _segment_version_components = ["dev", "pre", "post"]
@@ -170,10 +172,7 @@ _version_ops = {
 }
 
 
-def update_config_version(config, config_fp, element, **kwargs):
-    print(f"Read config from {config_fp}")
-    version = Version(config["metadata"]["version"])
-
+def _update(element, version, **kwargs):
     new_version = _version_ops[element](version, **kwargs)
     try:
         assert new_version > version
@@ -182,10 +181,31 @@ def update_config_version(config, config_fp, element, **kwargs):
             print("WARNING: we are reverting the version!")
         else:
             raise e
+    return new_version
 
-    print(f"Updating version `{version}` to `{new_version}`.")
-    config["metadata"]["version"] = str(new_version)
 
-    print("Writing back config...")
-    with open(config_fp, "w") as configfile:
-        config.write(configfile)
+def update_config_version(config, config_fp, config_type, element, **kwargs):
+    print(f"Read config from {config_fp}")
+
+    if config_type == ".cfg":
+        version = Version(config["metadata"]["version"])
+        new_version = _update(element, version, **kwargs)
+        print(f"Updating version `{version}` to `{new_version}`.")
+        config["metadata"]["version"] = str(new_version)
+        print("Writing back config...")
+        with open(config_fp, "w") as configfile:
+            config.write(configfile)
+
+    elif config_type == ".toml":
+        version = Version(config["tool"]["poetry"]["version"])
+        new_version = _update(element, version, **kwargs)
+        print(f"Updating version `{version}` to `{new_version}`.")
+        config["tool"]["poetry"]["version"] = str(new_version)
+        print("Writing back config...")
+        with open(config_fp, "w") as configfile:
+            toml.dump(config, configfile)
+
+    else:
+        raise NotImplementedError(
+            "File extension not recognized. Shoud be `.toml` or `.cfg`."
+        )
